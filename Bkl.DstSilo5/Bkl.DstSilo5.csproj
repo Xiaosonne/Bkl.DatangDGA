@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.7.1" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.21" />
+    <PackageReference Include="Orleans.Clustering.Redis" Version="3.2.2" />
+    <PackageReference Include="Orleans.Persistence.Redis" Version="3.2.2" />
+    <PackageReference Include="Orleans.Reminders.Redis" Version="3.2.2" />
+    <PackageReference Include="OrleansDashboard" Version="3.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bkl.Dst.Grains\Bkl.Dst.Grains.csproj" />
+    <ProjectReference Include="..\Bkl.Dst.Interfaces\Bkl.Dst.Interfaces.csproj" />
+    <ProjectReference Include="..\Bkl.Infrastructure\Bkl.Infrastructure.csproj" />
+    <ProjectReference Include="..\Bkl.Models\Bkl.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="run.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="run.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

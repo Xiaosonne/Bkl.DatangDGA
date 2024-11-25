@@ -1,0 +1,13 @@
+   [Unit]
+   Description=Bkl Dga State Source 
+   After=network.target
+
+   [Service]
+   ExecStart=/path/to/your/service
+   WorkingDirectory=/path/to/your/service/dir
+   Restart=always
+   User=root
+   Group=root
+
+   [Install]
+   WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<service>
+    <id>bklrealtime</id>
+    <name>bklrealtime</name>
+    <description>bklrealtime</description>
+    <executable>Bkl.DstRealtime.exe</executable> 
+	<arguments>--urls http://0.0.0.0:5005</arguments> 
+	<depend>MySQL80</depend>
+	<depend>Redis</depend>
+	<depend>bklsilo</depend>
+	<log mode="roll-by-size">
+		<sizeThreshold>500</sizeThreshold>
+		<keepFiles>10</keepFiles>
+	</log>
+</service>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Bkl.DGAStateSource": {
+      "commandName": "Project",
+      "workingDirectory": "$(OutputDir)"
+    }
+  }
+}

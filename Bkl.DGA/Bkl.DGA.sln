@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.DGA", "Bkl.DGA.csproj", "{33C86052-98ED-4138-B11D-28BF6A65758D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Models", "..\Bkl.Models\Bkl.Models.csproj", "{67B1602C-AAE4-4A65-970A-19DB52539539}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Infrastructure", "..\Bkl.Infrastructure\Bkl.Infrastructure.csproj", "{63F2A6A2-77D0-4668-AEDE-603EBDDE8AFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.StreamServer", "..\..\source\Bkl.StreamServer\Bkl.StreamServer.csproj", "{D22C0BF6-7242-4770-94BF-05160563D78E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.ESPS", "..\Bkl.ESPS\Bkl.ESPS.csproj", "{A66991C0-D982-42C3-A577-93A0C0343F93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33C86052-98ED-4138-B11D-28BF6A65758D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33C86052-98ED-4138-B11D-28BF6A65758D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33C86052-98ED-4138-B11D-28BF6A65758D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33C86052-98ED-4138-B11D-28BF6A65758D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67B1602C-AAE4-4A65-970A-19DB52539539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67B1602C-AAE4-4A65-970A-19DB52539539}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67B1602C-AAE4-4A65-970A-19DB52539539}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67B1602C-AAE4-4A65-970A-19DB52539539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63F2A6A2-77D0-4668-AEDE-603EBDDE8AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F2A6A2-77D0-4668-AEDE-603EBDDE8AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63F2A6A2-77D0-4668-AEDE-603EBDDE8AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63F2A6A2-77D0-4668-AEDE-603EBDDE8AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22C0BF6-7242-4770-94BF-05160563D78E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22C0BF6-7242-4770-94BF-05160563D78E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22C0BF6-7242-4770-94BF-05160563D78E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22C0BF6-7242-4770-94BF-05160563D78E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A66991C0-D982-42C3-A577-93A0C0343F93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66991C0-D982-42C3-A577-93A0C0343F93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66991C0-D982-42C3-A577-93A0C0343F93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66991C0-D982-42C3-A577-93A0C0343F93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F3E58EB-0B75-4BEB-AF35-182387532524}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\SiloClientShared\SiloClientShared.projitems*{33c86052-98ed-4138-b11d-28bf6a65758d}*SharedItemsImports = 5
+		..\BklAPIShare\BklAPIShare.projitems*{a66991c0-d982-42c3-a577-93a0c0343f93}*SharedItemsImports = 5
+		..\SiloClientShared\SiloClientShared.projitems*{a66991c0-d982-42c3-a577-93a0c0343f93}*SharedItemsImports = 5
+	EndGlobalSection
+EndGlobal

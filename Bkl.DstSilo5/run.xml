@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<service>
+    <id>bklsilo</id>
+    <name>bklsilo</name>
+    <description>BklDstSilo5</description>
+    <executable>Bkl.DstSilo5.exe</executable>   
+	<depend>MySQL80</depend> 
+	<depend>Redis</depend>
+	<log mode="roll-by-size">
+		<sizeThreshold>500</sizeThreshold>
+		<keepFiles>10</keepFiles>
+	</log>
+</service>

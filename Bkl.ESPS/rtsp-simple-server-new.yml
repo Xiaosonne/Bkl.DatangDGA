@@ -1,0 +1,68 @@
+logLevel: info
+logDestinations:
+- stdout
+logFile: rtsp-simple-server.log
+readTimeout: 10s
+writeTimeout: 10s
+readBufferCount: 512
+api: false
+apiAddress: 127.0.0.1:9997
+metrics: false
+metricsAddress: 127.0.0.1:9998
+pprof: false
+pprofAddress: 127.0.0.1:9999
+runOnConnectRestart: false
+rtspDisable: false
+protocols:
+- udp
+- multicast
+- tcp
+encryption: "no"
+rtspAddress: :8554
+rtspsAddress: :8322
+rtpAddress: :8000
+rtcpAddress: :8001
+multicastIPRange: 224.1.0.0/16
+multicastRTPPort: 8002
+multicastRTCPPort: 8003
+serverKey: server.key
+serverCert: server.crt
+authMethods:
+- basic
+- digest
+rtmpDisable: false
+rtmpAddress: :1935
+rtmpEncryption: "no"
+rtmpsAddress: :1936
+rtmpServerKey: server.key
+rtmpServerCert: server.crt
+hlsDisable: false
+hlsAddress: :8888
+hlsAlwaysRemux: false
+hlsVariant: mpegts
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms
+hlsSegmentMaxSize: 50M
+hlsAllowOrigin: '*'
+hlsEncryption: false
+hlsServerKey: server.key
+hlsServerCert: server.crt
+hlsTrustedProxies: []
+paths:
+  did192850135465989101:
+    source: rtsp://admin:bkl666666@192.168.31.164:554/Streaming/Channels/101?transportmode=unicast
+    sourceProtocol: automatic
+    sourceOnDemand: true
+  did192850135465989102:
+    source: rtsp://admin:bkl666666@192.168.31.164:554/Streaming/Channels/102?transportmode=unicast
+    sourceProtocol: automatic
+    sourceOnDemand: true
+  did192850135465989201:
+    source: rtsp://admin:bkl666666@192.168.31.164:554/Streaming/Channels/201?transportmode=unicast
+    sourceProtocol: automatic
+    sourceOnDemand: true
+  did192850135465989202:
+    source: rtsp://admin:bkl666666@192.168.31.164:554/Streaming/Channels/202?transportmode=unicast
+    sourceProtocol: automatic
+    sourceOnDemand: true

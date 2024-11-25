@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yitter.IdGenerator", "Yitter.IdGenerator\Yitter.IdGenerator.csproj", "{675CEC68-1151-47A5-9DF5-C4F3EDAF356A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Models", "Bkl.Models\Bkl.Models.csproj", "{8EE3E882-51D0-4136-AA98-444C13F401D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Infrastructure", "Bkl.Infrastructure\Bkl.Infrastructure.csproj", "{14C804AE-6B27-45BB-8FA8-8C80902593B2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BklAPIShare", "BklAPIShare\BklAPIShare.shproj", "{6CE40BAA-4197-425C-BFD2-E01BB48C5D7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Dst.Interfaces", "Bkl.Dst.Interfaces\Bkl.Dst.Interfaces.csproj", "{92C9A7EB-5B00-4D71-95CB-9460EBA886CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.Dst.Grains", "Bkl.Dst.Grains\Bkl.Dst.Grains.csproj", "{D982C1C7-39BD-446F-BD2F-94A65F31AE3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bkl.DstSilo5", "Bkl.DstSilo5\Bkl.DstSilo5.csproj", "{D5E4B1E5-6412-48F9-9C2C-080940DD8B68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{675CEC68-1151-47A5-9DF5-C4F3EDAF356A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675CEC68-1151-47A5-9DF5-C4F3EDAF356A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675CEC68-1151-47A5-9DF5-C4F3EDAF356A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675CEC68-1151-47A5-9DF5-C4F3EDAF356A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EE3E882-51D0-4136-AA98-444C13F401D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EE3E882-51D0-4136-AA98-444C13F401D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EE3E882-51D0-4136-AA98-444C13F401D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EE3E882-51D0-4136-AA98-444C13F401D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14C804AE-6B27-45BB-8FA8-8C80902593B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14C804AE-6B27-45BB-8FA8-8C80902593B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14C804AE-6B27-45BB-8FA8-8C80902593B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14C804AE-6B27-45BB-8FA8-8C80902593B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92C9A7EB-5B00-4D71-95CB-9460EBA886CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92C9A7EB-5B00-4D71-95CB-9460EBA886CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92C9A7EB-5B00-4D71-95CB-9460EBA886CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92C9A7EB-5B00-4D71-95CB-9460EBA886CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D982C1C7-39BD-446F-BD2F-94A65F31AE3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D982C1C7-39BD-446F-BD2F-94A65F31AE3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D982C1C7-39BD-446F-BD2F-94A65F31AE3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D982C1C7-39BD-446F-BD2F-94A65F31AE3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5E4B1E5-6412-48F9-9C2C-080940DD8B68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E4B1E5-6412-48F9-9C2C-080940DD8B68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5E4B1E5-6412-48F9-9C2C-080940DD8B68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5E4B1E5-6412-48F9-9C2C-080940DD8B68}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5675ADBE-4230-426B-ACE6-229975BDCEBB}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		BklAPIShare\BklAPIShare.projitems*{6ce40baa-4197-425c-bfd2-e01bb48c5d7e}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

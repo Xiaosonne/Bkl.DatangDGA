@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ericc.EntityFrameworkCore.OpenGauss" Version="2.0.0" />
+    <PackageReference Include="InfluxDB.Client" Version="4.14.0" />
+    <PackageReference Include="NetMQ" Version="4.0.1.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Bkl.Infrastructure\Bkl.Infrastructure.csproj" />
+    <ProjectReference Include="..\Bkl.Models\Bkl.Models.csproj" />
+  </ItemGroup>
+
+</Project>

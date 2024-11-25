@@ -1,0 +1,25 @@
+
+FROM alpine:3.15.3 as base
+ENV TZ=Asia/Shanghai DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+RUN echo "http://mirrors.aliyun.com/alpine/v3.15/main/" > /etc/apk/repositories
+RUN apk add  libstdc++ libintl
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS publish
+WORKDIR /app
+WORKDIR /src
+COPY ["Bkl.Infrastructure/", "Bkl.Infrastructure/"]
+COPY ["Bkl.Models/", "Bkl.Models/"]
+COPY ["Yitter.IdGenerator/", "Yitter.IdGenerator/"]
+COPY ["BklAPIShare/", "BklAPIShare/"]
+COPY ["Bkl.Inspection/", "Bkl.Inspection/"]
+
+RUN dotnet restore "Bkl.Inspection/Bkl.Inspection.csproj"
+WORKDIR "/src/Bkl.Inspection"
+RUN dotnet publish "Bkl.Inspection.csproj" --runtime alpine-x64 -c Release -o /app/publish  --sc true /p:PublishTrimmed=true 
+
+
+From base as final 
+WORKDIR /app/publish
+COPY --from=publish /app/publish .
+ENTRYPOINT ["./Bkl.Inspection","--urls","http://0.0.0.0:5000"]

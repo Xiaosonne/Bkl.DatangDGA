@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<service>
+    <id>bklesps</id>
+    <name>bklesps</name>
+    <description>bklesps</description>
+    <executable>Bkl.ESPS.exe</executable> 
+	<arguments>--urls http://0.0.0.0:5000</arguments>
+	<depend>MySQL80</depend> 
+	<depend>Redis</depend>
+	<log mode="roll-by-size">
+		<sizeThreshold>500</sizeThreshold>
+		<keepFiles>10</keepFiles>
+	</log>
+</service>
