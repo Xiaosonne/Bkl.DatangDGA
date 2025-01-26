@@ -1,4 +1,5 @@
 ﻿using Bkl.Models;
+using IEC61850.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,7 +35,20 @@ namespace Bkl.DGAStateSource
              .ConfigureServices((context, services) =>
              {
 
+                 if (context.Configuration.GetValue<string>("test") == "iec")
+                 {
+                     var server = context.Configuration.GetValue<string>("testserver");
+                     using var _iecConnection = new IedConnection();
+                     _iecConnection.Connect(server, 102);
+                     MmsConnection mmsCon = _iecConnection.GetMmsConnection();
 
+                     MmsServerIdentity identity = mmsCon.GetServerIdentity();
+
+                     Console.WriteLine("Vendor:   " + identity.vendorName);
+                     Console.WriteLine("Model:    " + identity.modelName);
+                     Console.WriteLine("Revision: " + identity.revision);
+                     return;
+                 }
                  BklConfig.Instance = new BklConfig();
                  if (BklConfig.Instance.SnowConfig == null)
                  {

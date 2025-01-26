@@ -130,7 +130,7 @@ namespace Bkl.ESPS.Controllers
 
             return Json(new { topfacs = arr, desc = str, details = lis }, new JsonSerializerOptions { PropertyNamingPolicy = null });
         }
-
+        [Authorize(Roles = "admin")]
         [HttpPost("check-logs")]
         public async Task<IActionResult> CheckLogsAsync([FromServices] BklDbContext context, [FromServices] LogonUser user, [FromBody] long[] logIds, [FromQuery] string reason)
         {
