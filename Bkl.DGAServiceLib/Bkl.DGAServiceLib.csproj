@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ericc.EntityFrameworkCore.OpenGauss" Version="2.0.0" />
+		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.25" />
+		<PackageReference Include="NetMQ" Version="4.0.1.13" />
+		<PackageReference Include="System.Reactive" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup> 
+		<ProjectReference Include="..\Bkl.Infrastructure\Bkl.Infrastructure.csproj" />
+		<ProjectReference Include="..\Bkl.Models\Bkl.Models.csproj" />
+		<ProjectReference Include="..\Yitter.IdGenerator\Yitter.IdGenerator.csproj" />
+	</ItemGroup>
+</Project>

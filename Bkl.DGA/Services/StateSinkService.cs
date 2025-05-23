@@ -13,33 +13,22 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Bkl.Infrastructure;
 using static ConnectionMonitorService;
-using Orleans.Runtime;
 public class StateSinkService : BackgroundService
 {
     private Channel<ChannelData<ConnectionMonitorService, HBData>> _hbChannel;
     private ILogger<StateSinkService> _logger;
-    private DbContextOptionsBuilder _builder;
     private IConfiguration _config;
     private Channel<ChannelData<DGAService, DeviceState[]>> _dgaChannel;
-    private IServiceScope _scope;
-    private IServiceProvider _serviceProvider;
-    private BklDbContext _context;
 
-    public StateSinkService(IServiceProvider serviceProvider,
-        Channel<ChannelData<DGAService, DeviceState[]>> dgaChannel,
+    public StateSinkService(Channel<ChannelData<DGAService, DeviceState[]>> dgaChannel,
              Channel<ChannelData<ConnectionMonitorService, HBData>> hbChannel,
         IConfiguration config,
-        ILogger<StateSinkService> logger,
-        DbContextOptionsBuilder builder)
+        ILogger<StateSinkService> logger)
     {
         _hbChannel = hbChannel;
         _logger = logger;
-        _builder = builder;
         _config = config;
         _dgaChannel = dgaChannel;
-        _scope = serviceProvider.CreateScope();
-        _serviceProvider = _scope.ServiceProvider;
-        _context = _scope.ServiceProvider.GetService<BklDbContext>();
 
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -52,9 +41,9 @@ public class StateSinkService : BackgroundService
             try
             {
                 var str = recv.ReceiveMultipartStrings(2);
-                _logger.Debug(DateTime.Now.ToString() + " state " + str[0]);
-                _logger.Debug(DateTime.Now.ToString() + " content " + str[1]);
-                recv.SendFrame(str[0]+"-resp "+DateTime.Now.ToUniversalTime().ToString());
+                _logger.LogDebug(DateTime.Now.ToString() + " state " + str[0]);
+                _logger.LogDebug(DateTime.Now.ToString() + " content " + str[1]);
+                recv.SendFrame(str[0] + "-resp " + DateTime.Now.ToUniversalTime().ToString());
                 if (str[0] == "dga")
                 {
                     await _dgaChannel.Writer.WriteAsync(new ChannelData<DGAService, DeviceState[]> { Data = JsonSerializer.Deserialize<DeviceState[]>(str[1]) });
@@ -63,7 +52,7 @@ public class StateSinkService : BackgroundService
                 {
 
                     try
-                    { 
+                    {
                         await _hbChannel.Writer.WriteAsync(new ChannelData<ConnectionMonitorService, HBData>
                         {
                             Data = new HBData

@@ -4,6 +4,23 @@
 
 namespace Bkl.Models
 {
+
+    public class DgaOnlineStatus
+    {
+        public long FactoryId { get; set; }
+        public long DeviceId { get; set; }
+        public int LastHeartBeat { get; set; }
+        public int ConnectNotify { get; set; }
+        public string Status { get; set; }
+        public int LoadContext { get; set; }
+
+        public override string ToString()
+        {
+            return $"{FactoryId},{DeviceId},{LastHeartBeat},{ConnectNotify},{Status}";
+        }
+    }
+
+
     public class DeviceStatus
     {
         public DeviceStatusItem[] status { get; set; }

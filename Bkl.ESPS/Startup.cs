@@ -49,18 +49,8 @@ namespace Bkl.ESPS
             services.AddSnowId(config);
             services.AddRedis(config);
             services.AddSingleton(config);
-            services.AddGaussDb(Configuration);
+            services.AddDatabase(Configuration);
 
-            //services.AddScoped<DbContextOptions<BklDbContext>>((service) => {
-            //    var httpContext=service.GetService<IHttpContextAccessor>();
-            //    return new DbContextOptionsBuilder<BklDbContext>().UseMySQL(config.MySqlString).Options;
-            //});
-            Console.WriteLine("AddDbContext " + BklConfig.Database.GenInitConfig().eusername);
-            Console.WriteLine("AddDbContext " + BklConfig.Database.GenInitConfig2().eusername+" "+ BklConfig.Database.GenInitConfig2().epassword);
-
-
-
-            //services.AddHostedService<ModbusSlaveService>(); 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<LogonUser>(context =>
             {
@@ -91,7 +81,7 @@ namespace Bkl.ESPS
                         ValidAudience = config.AuthConfig.Audience,
                         ValidateIssuer = false,
                         ValidateAudience = false
-                    }; 
+                    };
                 });
             services.AddHealthChecks();
             //services.AddSignalR();
@@ -100,6 +90,7 @@ namespace Bkl.ESPS
             //services.AddMDNS(new MDNSHelper.ApplicationProfile("esps", "_bcr-esps", 5000));
 
             //services.AddHostedService<PushStateService>();
+
             //services.AddHostedService<PushAlarmService>();
 
             //services.AddClusterClient();

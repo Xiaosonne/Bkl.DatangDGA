@@ -186,8 +186,9 @@ namespace Bkl.ESPS.Controllers
             var rules = context.BklAnalysisRule.ToList();
             var pairs = context.ModbusDevicePair.ToList();
 
-            var status = new List<DeviceDgaUpdateStatus>();
+            var status = new List<DeviceUpdateStatusBase>();
             Dictionary<long, Dictionary<string, DGAModel.DgaAlarmResult>> errorStatus = new();
+            Dictionary<string, string> onlineStatus = new Dictionary<string, string>();
 
             //List<Task> loadTasks = new List<Task>();
             foreach (var device in devices)
@@ -199,7 +200,7 @@ namespace Bkl.ESPS.Controllers
                                    select new { node = n, pairId = p.Id, connUuid = c.Uuid }).ToList();
                 var deviceRules = rules.Where(s => s.DeviceId == device.Id).ToList();
 
-                List<DeviceDgaUpdateStatus> devStatus = new();
+                List<DeviceUpdateStatusBase> devStatus = new();
 
                 try
                 {
@@ -208,7 +209,7 @@ namespace Bkl.ESPS.Controllers
                     {
                         logger.LogWarning($"LoadDeviceStatusZero {device.FactoryName} {device.FacilityName} {device.DeviceName} {dic.Count}");
                     }
-                    var redisDb = dic.Select(s => JsonSerializer.Deserialize<DeviceDgaUpdateStatus>(s.Value.ToString())).ToList();
+                    var redisDb = dic.Select(s => JsonSerializer.Deserialize<DeviceUpdateStatusBase>(s.Value.ToString())).ToList();
                     //devStatus.AddRange();
 
 
@@ -217,7 +218,7 @@ namespace Bkl.ESPS.Controllers
                         var runss = redisDb.FirstOrDefault(s => s.Name == ss.node.StatusName);
                         if (runss == null)
                         {
-                            devStatus.Add(new DeviceDgaUpdateStatus
+                            devStatus.Add(new DeviceUpdateStatusBase
                             {
                                 ConnUuid = ss.connUuid,
                                 Index = ss.pairId,
@@ -253,7 +254,16 @@ namespace Bkl.ESPS.Controllers
                 {
                     logger.LogError("ErrorLoadDeviceStatus:" + ex.ToString());
                 }
-
+                try
+                {
+                    string value = redisClient.GetValueFromHash("DeviceHeartBeat", device.Id.ToString());
+                    var online = value.JsonToObj<DgaOnlineStatus>();
+                    onlineStatus.Add(device.Id.ToString(), online.Status);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
 
                 try
                 {
@@ -281,7 +291,7 @@ namespace Bkl.ESPS.Controllers
             }
             orderDevices.AddRange(devices);
 
-            return new JsonResult(new { devices = orderDevices, status = status, errorStatus });
+            return new JsonResult(new { devices = orderDevices, status = status, onlineStatus, errorStatus });
         }
 
 
@@ -349,7 +359,7 @@ namespace Bkl.ESPS.Controllers
 
             try
             {
-                var data = SecurityHelper.AESDecrypt(sign);
+                var data = SecurityHelper.AESDecrypt(sign.Replace(" ", "+"));
                 if (data != $"{factoryId}secbkl{t}")
                     return "";
             }
@@ -455,28 +465,7 @@ namespace Bkl.ESPS.Controllers
                 condition = condition.Where(s => s.FacilityId == facilityId);
             if (deviceId != 0)
                 condition = condition.Where(s => s.Id == deviceId);
-            //if (subsys != null)
-            //{
-            //    string facType = "";
-            //    switch (subsys)
-            //    {
-            //        case "byq":
-            //            facType = "Transformer";
-            //            break;
-            //        case "fjzn":
-            //            facType = "WindPowerGenerator";
-            //            break;
-            //        case "fdj":
-            //            facType = "HeatPowerGenerator";
-            //            break;
-            //        case "wpg":
-            //            facType = "WindPowerGenerator";
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //    condition = condition.Join(context.BklFactoryFacility.Where(q => q.FacilityType == facType), dev => dev.FacilityId, fa => fa.Id, (dev, fa) => dev);
-            //}
+
 
             var devices = condition.AsNoTracking().ToList();
             var devTypes = devices.Select(s => s.DeviceType).Distinct();
@@ -484,13 +473,12 @@ namespace Bkl.ESPS.Controllers
             var conns = context.ModbusConnInfo.ToList();
             var status = new List<DeviceUpdateStatus>();
             Dictionary<long, Dictionary<string, DeviceAlarmEntry>> errorStatus = new Dictionary<long, Dictionary<string, DeviceAlarmEntry>>();
+            Dictionary<long, string> onlineStatus = new Dictionary<long, string>();
+
             var pairs = context.ModbusDevicePair.ToList();
-            List<Task> loadTasks = new List<Task>();
+
             foreach (var device in devices)
             {
-
-
-
                 var statusNodes = (from p in pairs
                                    join n in nodes on p.NodeId equals n.Id
                                    join c in conns on p.ConnectionId equals c.Id
@@ -498,58 +486,47 @@ namespace Bkl.ESPS.Controllers
                                    select new { node = n, pairId = p.Id, connUuid = c.Uuid }).ToList();
                 List<DeviceAlarmEntry> devAlarm = new();
                 List<DeviceUpdateStatus> devStatus = new();
-                //try
-                //{
-                //    IDeviceGrain grain = clusterClient.GetGrain<IDeviceGrain>(new DeviceGrainId(device));
-                //    await grain.GetDevice().WithTimeout<BklDeviceMetadata>(TimeSpan.FromMilliseconds(3000));
-                //}
-                //catch (Exception ex)
-                //{
-                //    logger.LogError(ex.ToString());
-                //}
-                //try
-                //{
-                //    IDeviceGrain grain = clusterClient.GetGrain<IDeviceGrain>(new DeviceGrainId(device));
-                //    //devAlarm = (await grain.GetAlarms()).ToList();
-                //    devStatus = (await grain.GetStatus()).ToList();
-                //    if (device.DeviceType == "DGA")
-                //    {
-                //        IAnalysisDGAGrain dgagrain = clusterClient.GetGrain<IAnalysisDGAGrain>("DGAGPR" + device.Id);
-                //        List<DeviceUpdateStatus> lis = new List<DeviceUpdateStatus>(devStatus);
-                //        lis.AddRange((await dgagrain.GetStatus()).Select(q => new DeviceUpdateStatus { DeviceId = device.Id, Name = q.name, Value = q.value }));
-                //        devStatus = lis.ToList();
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine(ex.ToString());
-                //}
-                var dic = redisClient.GetValuesFromHash($"DeviceStatus:{device.Id}");
-                devStatus.AddRange(dic.Select(s => JsonSerializer.Deserialize<DeviceUpdateStatus>(s.Value.ToString())));
-                foreach (var ss in statusNodes)
+                try
                 {
-                    var runss = devStatus.FirstOrDefault(s => s.Index == ss.pairId && s.AttributeId == ss.node.Id && s.Name == ss.node.StatusName);
-                    if (runss == null)
+                    var dic = redisClient.GetValuesFromHash($"DeviceStatus:{device.Id}");
+                    devStatus.AddRange(dic.Select(s => JsonSerializer.Deserialize<DeviceUpdateStatus>(s.Value.ToString())));
+                    foreach (var ss in statusNodes)
                     {
-                        devStatus.Add(new DeviceUpdateStatus
+                        var runss = devStatus.FirstOrDefault(s => s.Index == ss.pairId && s.AttributeId == ss.node.Id && s.Name == ss.node.StatusName);
+                        if (runss == null)
                         {
-                            ConnUuid = ss.connUuid,
-                            Index = ss.pairId,
-                            AttributeId = ss.node.Id,
-                            DeviceId = device.Id,
-                            Name = ss.node.StatusName,
-                            NameCN = ss.node.StatusNameCN,
-                            Value = "-1",
-                            Unit = ss.node.Unit,
-                            UnitCN = ss.node.UnitCN,
-                        });
+                            devStatus.Add(new DeviceUpdateStatus
+                            {
+                                ConnUuid = ss.connUuid,
+                                Index = ss.pairId,
+                                AttributeId = ss.node.Id,
+                                DeviceId = device.Id,
+                                Name = ss.node.StatusName,
+                                NameCN = ss.node.StatusNameCN,
+                                Value = "-1",
+                                Unit = ss.node.Unit,
+                                UnitCN = ss.node.UnitCN,
+                            });
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
                 }
                 status.AddRange(devStatus);
                 errorStatus.Add(device.Id, devAlarm.ToDictionary(q => q.Key, q => q));
+                try
+                {
+                    string value = redisClient.GetValueFromHash("DeviceHeartBeat", device.Id.ToString());
+                    var online = value.JsonToObj<DgaOnlineStatus>();
+                    onlineStatus.Add(device.Id, online.Status);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
             }
-
-            Task.WaitAll(loadTasks.ToArray(), 2000);
 
             List<BklDeviceMetadata> devicesret = new List<BklDeviceMetadata>();
             foreach (var order in FactoryOrders.orders)
@@ -557,7 +534,7 @@ namespace Bkl.ESPS.Controllers
                 var devs = devices.Where(s => s.FactoryName.Contains(order)).OrderBy(s => s.DeviceName).ToList();
                 devicesret.AddRange(devs);
             }
-            return new JsonResult(new { devices = devicesret, status = status, errorStatus });
+            return new JsonResult(new { devices = devicesret, status = status, onlineStatus, errorStatus });
         }
 
         [HttpGet("status-devices")]

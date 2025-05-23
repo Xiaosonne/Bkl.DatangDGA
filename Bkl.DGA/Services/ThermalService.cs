@@ -9,7 +9,6 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Orleans;
 using System.Text.Json;
 
 public class ThermalService : BackgroundService
@@ -36,20 +35,20 @@ public class ThermalService : BackgroundService
                        .Select(s => new { camera = s.camera, s.device, conn = JsonSerializer.Deserialize<ConnJson>(s.conn) })
                        .ToList();
 
-        IClusterClient orleanClient;
-        while (true)
-        {
-            try
-            {
-                orleanClient = _scope.ServiceProvider.GetService<IClusterClient>();
-                break;
-            }
-            catch
-            {
+        //IClusterClient orleanClient;
+        //while (true)
+        //{
+        //    try
+        //    {
+        //        orleanClient = _scope.ServiceProvider.GetService<IClusterClient>();
+        //        break;
+        //    }
+        //    catch
+        //    {
 
-            }
-            await Task.Delay(1000);
-        }
+        //    }
+        //    await Task.Delay(1000);
+        //}
 
         Queue<IThermalTask> logingQueue = new Queue<IThermalTask>();
         List<IThermalTask> thermalQueue = new List<IThermalTask>();

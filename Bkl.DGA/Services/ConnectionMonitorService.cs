@@ -14,12 +14,10 @@ using Bkl.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
-using Orleans.Runtime;
 
 public class ConnectionMonitorService : BackgroundService
 {
     private ILogger<StateSinkService> _logger;
-    private DbContextOptionsBuilder _builder;
     private IConfiguration _config;
     private Channel<ChannelData<ConnectionMonitorService, HBData>> _hbChannel;
     private IServiceScope _scope;
@@ -30,11 +28,9 @@ public class ConnectionMonitorService : BackgroundService
         IServiceProvider serviceProvider,
         Channel<ChannelData<ConnectionMonitorService, HBData>> hbChannel,
         IConfiguration config,
-        ILogger<StateSinkService> logger,
-        DbContextOptionsBuilder builder)
+        ILogger<StateSinkService> logger )
     {
         _logger = logger;
-        _builder = builder;
         _config = config;
         _hbChannel = hbChannel;
         _scope = serviceProvider.CreateScope();
@@ -46,24 +42,11 @@ public class ConnectionMonitorService : BackgroundService
     {
         public string HeartBeat { get; set; }
     }
-    public class HBContext
-    {
-        public long FactoryId { get; set; }
-        public long DeviceId { get; set; }
-        public int LastHeartBeat { get; set; }
-        public int ConnectNotify { get; set; }
-        public string Status { get; set; }
-        public int LoadContext { get; set; }
-
-        public override string ToString()
-        {
-            return $"{FactoryId},{DeviceId},{LastHeartBeat},{ConnectNotify},{Status}";
-        }
-    }
+   
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         DateTime offlineDetect = DateTime.MinValue;
-        Dictionary<long, HBContext> contexts = new Dictionary<long, HBContext>();
+        Dictionary<long, DgaOnlineStatus> contexts = new Dictionary<long, DgaOnlineStatus>();
         var redis = _serviceProvider.GetService<IRedisClient>();
 
         try
@@ -72,7 +55,7 @@ public class ConnectionMonitorService : BackgroundService
                 .Select(s =>
                 {
                     var str = s.Value.ToString();
-                    return TryCatchExtention.TryCatch(() => str.JsonToObj<HBContext>(), null);
+                    return TryCatchExtention.TryCatch(() => str.JsonToObj<DgaOnlineStatus>(), null);
                 })
                 .Where(s => s != null)
                 .ToDictionary(s => s.DeviceId, s => s);
@@ -84,7 +67,7 @@ public class ConnectionMonitorService : BackgroundService
                 redis.RemoveEntryFromHash("DeviceHeartBeat", item.ToString());
             }
             var lis = mdevs.Where(s => !contexts.ContainsKey(s.Id))
-                 .Select(t => new HBContext
+                 .Select(t => new DgaOnlineStatus
                  {
                      FactoryId = t.FactoryId,
                      DeviceId = t.Id,
@@ -118,7 +101,7 @@ public class ConnectionMonitorService : BackgroundService
                 var vals = redis.GetValuesFromHash("DeviceLoadContext");
                 foreach (var hb in contexts)
                 {
-                    _logger.Debug($"device:{hb.Value.DeviceId} offline:{(unix - hb.Value.LastHeartBeat)} max:{offlineMaxTime} push:{(unix - hb.Value.ConnectNotify)} max:{ConnectNotifyInterval}");
+                    _logger.LogDebug($"device:{hb.Value.DeviceId} offline:{(unix - hb.Value.LastHeartBeat)} max:{offlineMaxTime} push:{(unix - hb.Value.ConnectNotify)} max:{ConnectNotifyInterval}");
 
                     if (vals.ContainsKey(hb.Value.DeviceId.ToString()))
                         hb.Value.LoadContext = int.Parse(vals[hb.Value.DeviceId.ToString()].ToString());
@@ -163,10 +146,10 @@ public class ConnectionMonitorService : BackgroundService
                     long deviceId = long.Parse(decdata[1]);
                     int timstamp = int.Parse(decdata[2]);
 
-                    HBContext outdata = null;
+                    DgaOnlineStatus outdata = null;
                     if (!contexts.ContainsKey(deviceId))
                     {
-                        outdata = new HBContext
+                        outdata = new DgaOnlineStatus
                         {
                             DeviceId = deviceId,
                             FactoryId = factoryId,

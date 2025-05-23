@@ -60,13 +60,14 @@ public class StateSourceService : BackgroundService
         _config.GetSection("Iec61850:GasMap").Bind(dic);
 
 
+        var heartBeat = TryCatchExtention.TryCatch(() => int.TryParse(_config.GetSection("DGA:HeartBeatInterval").Value, out var a) ? a : 30, 30);
+
+        var factoryId = TryCatchExtention.TryCatch(() => long.TryParse(_config.GetSection("AppSetting:FactoryId").Value, out var a) ? a : 0, 0);
+
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000);
-
-            var heartBeat = TryCatchExtention.TryCatch(() => int.TryParse(_config.GetSection("DGA:HeartBeatInterval").Value, out var a) ? a : 30, 30);
-
-            var factoryId = TryCatchExtention.TryCatch(() => long.TryParse(_config.GetSection("AppSetting:FactoryId").Value, out var a) ? a : 0, 0);
 
             var contextServer = _config.GetSection("AppSetting:ContextServer").Value;
 
@@ -226,13 +227,13 @@ public class StateSourceService : BackgroundService
 
     private async Task ExecRead()
     {
+        var topic = _config.GetSection("AppSetting:MainTopic")?.Value ?? "dga";
         var connTimeOutsecond = TryCatchExtention.TryCatch(() => double.TryParse(_config.GetSection("DGA:ConnectionTimeout").Value, out var a) ? a : 1, 1);
         var readInterval = TryCatchExtention.TryCatch(() => int.TryParse(_config.GetSection("DGA:ReadInterval").Value, out var a) ? a : 3600, 3600);
         try
         {
             foreach (var gp in modbusList.Values)
             {
-                List<DeviceState> lis = new List<DeviceState>();
                 // Console.WriteLine($"ENTER ");
                 CancellationTokenSource cts = new CancellationTokenSource();
                 cts.CancelAfter(TimeSpan.FromSeconds(connTimeOutsecond));
@@ -241,7 +242,7 @@ public class StateSourceService : BackgroundService
                 {
                     continue;
                 }
-                var status = await gp.QueryAsync(cts.Token);
+                DeviceState[] status = await gp.QueryAsync(cts.Token);
                 //Console.WriteLine($"WRITE {status.First().DeviceId}  {string.Join("\t", status.Select(stat => $"{stat.Name} {stat.NameCN} {stat.Value}"))}");
                 //await _deviceStatusQueue.Writer.WriteAsync(status);
                 // Console.WriteLine($"WRITE  END");
@@ -256,7 +257,7 @@ public class StateSourceService : BackgroundService
                         sb.Append(item.Name + "\t" + item.Value + "\t");
                     }
                     _logger.LogInformation($"{gp.Device.DeviceName}\t{gp.Device.Id}\t{sb}");
-                    await SendMessage("dga", data, gp.Device);
+                    await SendMessage(topic, data, gp.Device);
 
                 }
                 catch (Exception ex)

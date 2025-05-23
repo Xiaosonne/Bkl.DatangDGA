@@ -19,15 +19,15 @@ namespace Bkl.StreamServer.Services
 {
     public class DistributeService : BackgroundService
     {
-        private Channel<ChannelData<PersistentService, DgaPushData>> _channel;
-        private Channel<ChannelData<PersistentService, DgaAlarmResult>> _channelAlarm;
+        private Channel<DgaPushData> _channel;
+        private Channel<DgaAlarmResult> _channelAlarm;
         private IConfiguration _config;
         private ILogger<DistributeService> _logger;
         private IHubContext<DeviceStateHub> _hubContext;
         private IServiceScope _scope;
         public DistributeService(ILogger<DistributeService> logger,
-             Channel<ChannelData<PersistentService, DgaPushData>> channel,
-             Channel<ChannelData<PersistentService, DgaAlarmResult>> channelAlarm,
+             Channel<DgaPushData> channel,
+             Channel<DgaAlarmResult> channelAlarm,
             IServiceProvider service,
             IHubContext<DeviceStateHub> hubContext,
             IConfiguration config)
@@ -89,6 +89,15 @@ namespace Bkl.StreamServer.Services
                     var msg = sub.ReceiveMultipartStrings(2);
                     switch (msg[0])
                     {
+                        case "modbus":
+                            {
+                                var data = TryCatchExtention.TryCatch(str => JsonSerializer.Deserialize<DeviceStatus>(str), msg[1], msg[1]);
+                                if (data == null)
+                                {
+                                    _logger.LogError("ParsError " + msg[1]);
+                                }
+                            }
+                            break;
                         case "dga":
                             {
                                 _logger.LogInformation(msg[1]);
@@ -105,7 +114,7 @@ namespace Bkl.StreamServer.Services
                                         meta = new DeviceWebMeta { FactoryId = data.FactoryId, FacilityId = data.FacilityId, DeviceId = data.DeviceId },
                                         status = data.GasData.Select(s => s.ToStatus()).SelectMany(s => s)
                                     }, webjson));
-                                    await _channel.Writer.WriteAsync(new ChannelData<PersistentService, DgaPushData> { Data = data });
+                                    await _channel.Writer.WriteAsync(data);
                                 }
 
                             }
@@ -120,7 +129,7 @@ namespace Bkl.StreamServer.Services
                                 }
                                 else
                                 {
-                                    await _channelAlarm.Writer.WriteAsync(new ChannelData<PersistentService, DgaAlarmResult> { Data = data });
+                                    await _channelAlarm.Writer.WriteAsync(data);
                                 }
                             }
                             break;
@@ -168,6 +177,6 @@ namespace Bkl.StreamServer.Services
     public class DeviceWebStatus
     {
         public DeviceWebMeta meta { get; set; }
-        public IEnumerable<DeviceDgaUpdateStatus> status { get; set; }
+        public IEnumerable<DeviceUpdateStatusBase> status { get; set; }
     }
 }

@@ -39,9 +39,9 @@ namespace Bkl.Models
         public DateTime PushTime { get; set; }
     }
 
-    public class DeviceDgaUpdateStatus
+    public class DeviceUpdateStatusBase
     {
-        public DeviceDgaUpdateStatus()
+        public DeviceUpdateStatusBase()
         {
 
         }

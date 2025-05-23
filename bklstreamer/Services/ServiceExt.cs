@@ -18,4 +18,20 @@ public static class ServiceExt
         });
         return gaussDecryptConfig;
     }
+
+    public static BklConfig.Database AddMySQL(this IServiceCollection services, IConfiguration conf, string sqlConfName)
+    {
+        BklConfig.Database gaussConfig = new BklConfig.Database();
+        conf.GetSection(sqlConfName).Bind(gaussConfig);
+        var Oceanbase = gaussConfig.GetEncrypt();
+
+        services.AddSingleton(Oceanbase);
+        services.AddSingleton(new DbContextOptionsBuilder<BklDbContext>().UseMySQL(Oceanbase.GetConnectionString()));
+        services.AddDbContext<BklDbContext>((serviceProvider, builder) =>
+        {
+            builder.UseMySQL(Oceanbase.GetConnectionString());
+        });
+        return Oceanbase;
+    }
+
 }

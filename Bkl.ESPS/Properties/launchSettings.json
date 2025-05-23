@@ -10,7 +10,7 @@
     },
     "Bkl.ESPS": {
       "commandName": "Project",
-      "commandLineArgs": " --urls http://0.0.0.0:5000",
+      "commandLineArgs": "  --urls http://0.0.0.0:5000 ",
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

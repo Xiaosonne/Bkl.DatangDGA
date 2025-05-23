@@ -19,12 +19,12 @@ namespace Bkl.StreamServer.Services
         private IServiceScope _scope;
         private IRedisClient _redis;
         private IHubContext<DeviceStateHub> _hubcontext;
-        private Channel<ChannelData<PersistentService, DgaPushData>> _channelPush;
-        private Channel<ChannelData<PersistentService, DgaAlarmResult>> _channelAlarm;
+        private Channel<DgaPushData> _channelPush;
+        private Channel<DgaAlarmResult> _channelAlarm;
 
         public PersistentService(ILogger<PersistentService> logger,
-            Channel<ChannelData<PersistentService, DgaPushData>> channel,
-            Channel<ChannelData<PersistentService, DgaAlarmResult>> channel2,
+            Channel<DgaPushData> channel,
+            Channel<DgaAlarmResult> channel2,
             IHubContext<DeviceStateHub> hubcontext,
 
             IServiceProvider service,
@@ -45,6 +45,12 @@ namespace Bkl.StreamServer.Services
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
         };
 
+        JsonSerializerOptions webjson = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        List<DgaAlarmResult> _results = new List<DgaAlarmResult>();
+        DateTime _lastProcess = DateTime.MinValue;
 
         private void WriteToRedis(DgaPushData? data)
         {
@@ -113,7 +119,7 @@ namespace Bkl.StreamServer.Services
                     var status = context.BklDGAStatus.FirstOrDefault(s => s.DeviceRelId == data.DeviceId && s.Time >= start && s.Time < end);
                     if (status == null)
                     {
-                        DeviceDgaUpdateStatus[] lis = data.ToStatus();
+                        DeviceUpdateStatusBase[] lis = data.ToStatus();
                         var jsonstr = lis.ToDictionary(s => s.Name, s => double.TryParse(s.Value, out var a) ? a : 0).ToJson();
                         status = jsonstr.JsonToObj<BklDGAStatus>();
                         status.DeviceRelId = data.DeviceId;
@@ -171,44 +177,6 @@ namespace Bkl.StreamServer.Services
         }
 
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (stoppingToken.IsCancellationRequested == false)
-            {
-                await Task.Delay(10);
-
-                try
-                {
-                    if (_channelPush.Reader.TryRead(out var data))
-                    {
-                        WriteToRedis(data.Data);
-                        await WriteToDatabase(data.Data);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-                try
-                {
-                    if (_channelAlarm.Reader.TryRead(out var data))
-                    {
-                        WriteToDb(data.Data);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-            }
-        }
-        JsonSerializerOptions webjson = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        List<DgaAlarmResult> _results = new List<DgaAlarmResult>();
-        DateTime _lastProcess = DateTime.MinValue;
         private void WriteToDb(IList<DgaAlarmResult> lis)
         {
             using (BklDbContext context = new BklDbContext(_option))
@@ -217,7 +185,7 @@ namespace Bkl.StreamServer.Services
                     .Select(gp => gp.OrderByDescending(s => s.AlarmTime).First())
                     .ToList();
                 foreach (var currentAlarmResult in logs)
-                { 
+                {
                     var dbAlarmResult = context.BklAnalysisLog
                                     .Where(s => s.DeviceId == currentAlarmResult.DeviceId && s.RuleId == currentAlarmResult.RuleId)
                                     .OrderByDescending(s => s.Id)
@@ -336,6 +304,38 @@ namespace Bkl.StreamServer.Services
                 RecordedVideo = "#",
                 AlarmTimes = 1,
             };
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            while (stoppingToken.IsCancellationRequested == false)
+            {
+                await Task.Delay(10);
+
+                try
+                {
+                    if (_channelPush.Reader.TryRead(out var data))
+                    {
+                        WriteToRedis(data);
+                        await WriteToDatabase(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                try
+                {
+                    if (_channelAlarm.Reader.TryRead(out var data))
+                    {
+                        WriteToDb(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
     }
 }

@@ -2,8 +2,17 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Bkl.Infrastructure;
+using Microsoft.Extensions.Configuration;
 namespace Bkl.Models
 {
+    public interface IServiceLibOpt
+    {
+        IConfigurationSection MainSection { get; set; }
+    }
+    public class ServiceLibOption<T> : IServiceLibOpt
+    {
+        public IConfigurationSection MainSection { get; set; }
+    }
     public class FacilityGPS
     {
         public long id { get; set; }
@@ -64,6 +73,17 @@ namespace Bkl.Models
                     database = database,
                     eusername = eusername.AESDecrypt(DB_AES_KEY),
                     epassword = epassword.AESDecrypt(DB_AES_KEY),
+                    host = host,
+                    port = port,
+                };
+            }
+            public Database GetEncrypt()
+            {
+                return new Database
+                {
+                    database = database,
+                    eusername = eusername.AESEncrypt(DB_AES_KEY),
+                    epassword = epassword.AESEncrypt(DB_AES_KEY),
                     host = host,
                     port = port,
                 };

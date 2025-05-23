@@ -5,6 +5,7 @@ namespace Bkl.Models
     {
         public string key { get; set; }
         public string name { get; set; }
+        public string level { get; set; }
     }
     public class AnalysisLogView
     {

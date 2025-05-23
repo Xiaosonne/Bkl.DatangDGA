@@ -92,40 +92,40 @@ namespace Bkl.Models
             public UnnormalContext RealUnnormal { get; set; }
             public UnnormalContext HistoryUnnormal { get; set; }
 
-            public DeviceDgaUpdateStatus[] ToThreeStatus()
+            public DeviceUpdateStatusBase[] ToThreeStatus()
             {
-                return new DeviceDgaUpdateStatus[]
+                return new DeviceUpdateStatusBase[]
                 {
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H2_C2H4_Code),Value=ThreeRatio.C2H2_C2H4_Code .ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H4_C2H6_Code),Value=ThreeRatio.C2H4_C2H6_Code.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.CH4_H2_Code),Value=ThreeRatio.CH4_H2_Code.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H2_C2H4)+"_Tatio",Value=ThreeRatio.C2H2_C2H4.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H4_C2H6)+"_Tatio",Value=ThreeRatio.C2H4_C2H6.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.CH4_H2)+"_Tatio",Value=ThreeRatio.CH4_H2.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.CO2_CO)+"_Tatio",Value=ThreeRatio.CO2_CO.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.O2_N2)+"_Tatio",Value=ThreeRatio.O2_N2.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H6_CH4)+"_Tatio",Value=ThreeRatio.C2H6_CH4.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= nameof(ThreeRatio.C2H2_H2)+"_Tatio",Value=ThreeRatio.C2H2_H2.ToString()},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= "ThreeErrorCode",Value=ThreeRatio.ErrorCode},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= "ThreeErrorType",Value=ThreeRatio.ErrorType},
-                    new DeviceDgaUpdateStatus {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
+                    new DeviceUpdateStatusBase {DeviceId=DeviceId ,FacilityId=FacilityId,FactoryId=FactoryId,
                         Name= "ThreeErrorReason",Value=ThreeRatio.ErrorReason},
 
                 };
             }
-            public DeviceDgaUpdateStatus[] ToStatus()
+            public DeviceUpdateStatusBase[] ToStatus()
             {
                 return ToThreeStatus()
                     .Concat(GasData.SelectMany(s => s.ToStatus()))
@@ -143,10 +143,10 @@ namespace Bkl.Models
             public double GasIncValue { get; set; }
             public GasMetadata GasMetadata { get; set; }
 
-            public DeviceDgaUpdateStatus[] ToStatus()
+            public DeviceUpdateStatusBase[] ToStatus()
             {
-                return new DeviceDgaUpdateStatus[]{
-                    new DeviceDgaUpdateStatus
+                return new DeviceUpdateStatusBase[]{
+                    new DeviceUpdateStatusBase
                     {
                         Name = GasName,
                         NameCN = GasMetadata.GasNameCN,
@@ -159,7 +159,7 @@ namespace Bkl.Models
                         UnitCN = GasMetadata.UnitCN,
                         Value = GasValue.ToString(),
                     },
-                     new DeviceDgaUpdateStatus
+                     new DeviceUpdateStatusBase
                     {
                         Name = GasName+"_Inc",
                         NameCN = GasMetadata.GasNameCN+"增量",
@@ -171,7 +171,7 @@ namespace Bkl.Models
                         UnitCN = GasMetadata.UnitCN,
                         Value = GasIncValue.ToString(),
                     },
-                     new DeviceDgaUpdateStatus
+                     new DeviceUpdateStatusBase
                     {
                         Name = GasName+"_AGPR",
                         NameCN = GasMetadata.GasNameCN+"绝对产期率",
@@ -182,7 +182,7 @@ namespace Bkl.Models
                         UnitCN = "L/d",
                         Value = AGPR.ToString(),
                     },
-                      new DeviceDgaUpdateStatus
+                      new DeviceUpdateStatusBase
                     {
                         Name = GasName+"_RGPR",
                         NameCN = GasMetadata.GasNameCN+"相对产期率",

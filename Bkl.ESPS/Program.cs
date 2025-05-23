@@ -27,12 +27,11 @@ namespace Bkl.ESPS
             .ConfigureAppConfiguration((hostcontext, builder) =>
             {
 
-                builder.AddJsonFile("appsettings.json",
-                    optional: true, reloadOnChange: true);
-                builder.AddJsonFile($"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                builder.AddJsonFile("appsettings.json",  optional: true, reloadOnChange: true);
+                //builder.AddJsonFile($"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                 //builder.AddJsonFile($"appsettings.bkl.json", optional: true, reloadOnChange: true);
                 //builder.AddJsonFile($"appsettings.xiangrikui.json", optional: true, reloadOnChange: true);
-                builder.AddJsonFile($"appsettings.bkl.json", optional: true, reloadOnChange: true);
+                builder.AddJsonFile($"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
             })
             .ConfigureWebHostDefaults(webBuilder =>
                 {

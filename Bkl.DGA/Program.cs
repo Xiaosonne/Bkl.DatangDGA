@@ -30,15 +30,15 @@ namespace Bkl.DGA
                   builder.AddJsonFile("appsettings.json",
                       optional: true,
                       reloadOnChange: true);
-                  //builder.AddJsonFile(
-                  //    $"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json",
-                  //     optional: true,
-                  //     reloadOnChange: true);
-
                   builder.AddJsonFile(
-                          $"appsettings.bkl.json",
-                           optional: true,
-                           reloadOnChange: true);
+                      $"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json",
+                       optional: true,
+                       reloadOnChange: true);
+
+                  //builder.AddJsonFile(
+                  //        $"appsettings.bkl.json",
+                  //         optional: true,
+                  //         reloadOnChange: true);
               })
               .ConfigureServices((context, services) =>
               {
@@ -55,7 +55,7 @@ namespace Bkl.DGA
                   services.AddSnowId(config);
                   services.AddSingleton(config);
                   services.AddRedis(config);
-                  services.AddGaussDb(context.Configuration);
+                  services.AddMySQL(context.Configuration, "OceanBase");
 
 
                   services.AddSingleton(Channel.CreateBounded<ChannelData<DGAService, DeviceState[]>>(new BoundedChannelOptions(100)));

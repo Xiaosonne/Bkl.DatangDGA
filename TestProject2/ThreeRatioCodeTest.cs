@@ -95,6 +95,8 @@ namespace TestProject2
         {
             public DGAAlarmConfig AlarmConfig => DGAAlarmConfig.Default;
 
+            public string DeviceName => throw new NotImplementedException();
+
             Dictionary<string, double> gasValue = new Dictionary<string, double>
         {
             {nameof(GasName.CH4),11.03},

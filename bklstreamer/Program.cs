@@ -20,12 +20,18 @@ namespace Bkl.StreamServer
 
                 builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
                 builder.AddJsonFile($"appsettings.{hostcontext.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                builder.AddJsonFile($"appsettings.remote.json", optional: true, reloadOnChange: true);
                 //builder.AddJsonFile($"appsettings.bkl.json", optional: true, reloadOnChange: true);
             });
+
+            builder.Services.AddSingleton(Channel.CreateBounded<DgaPushData>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.DropOldest }));
+
+            builder.Services.AddSingleton(Channel.CreateBounded<DgaAlarmResult>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.DropOldest }));
+
+
             builder.Services.AddControllers();
             builder.Services.AddHostedService<DistributeService>();
             builder.Services.AddHostedService<PersistentService>();
+            builder.Services.AddHostedService<HubRoutingService>();
             //builder.Services.AddHostedService<AlarmService>();
             builder.Services.AddSignalR();
 
@@ -46,11 +52,9 @@ namespace Bkl.StreamServer
             };
             builder.Configuration.GetSection("Redis").Bind(redis);
 
-            builder.Services.AddGaussDb(builder.Configuration);
+            builder.Services.AddMySQL(builder.Configuration, "OceanBase");
 
-            builder.Services.AddSingleton(Channel.CreateBounded<ChannelData<PersistentService, DgaPushData>>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.DropOldest }));
 
-            builder.Services.AddSingleton(Channel.CreateBounded<ChannelData<PersistentService, DgaAlarmResult>>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.DropOldest }));
             builder.Services.AddRedis(redis);
             builder.Services.AddSnowId(new BklConfig.Snow());
             //builder.Services.AddHostedService<ZqmDemo>();

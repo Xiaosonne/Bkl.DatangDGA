@@ -1,9 +1,9 @@
 ﻿using Bkl.Models;
 using System;
 
-public class DeviceState
+public class DeviceState1
 {
-    public DeviceState()
+    public DeviceState1()
     {
 
     }

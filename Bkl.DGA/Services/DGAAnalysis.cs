@@ -62,6 +62,9 @@ public class DGAAnalysis : IThreeCodeChecker
 
     public UnnormalContextCalc UnnormalState { get; set; } = new UnnormalContextCalc();
     public UnnormalContextCalc UnnormalHistoryState { get; set; } = new UnnormalContextCalc();
+
+    public string DeviceName => $"{_device.FactoryName} {_device.DeviceName}";
+
     public DGAAnalysis()
     {
         YearsGasData = new List<GasYearData>();
@@ -74,7 +77,7 @@ public class DGAAnalysis : IThreeCodeChecker
     {
         var val = ((stop.Value - start.Value) / (stop.UtcTime - start.UtcTime).TotalDays) * (this._alarmConfig.OilBulk);
 
-        Console.WriteLine($"CalcAGPR  {Device.FactoryName} {Device.DeviceName} {name} Start:{start.UtcTime} StartGas:{start.Value} Stop:{stop.UtcTime} StopGas:{stop.Value} value:{val}");
+        //Console.WriteLine($"CalcAGPR  {Device.FactoryName} {Device.DeviceName} {name} Start:{start.UtcTime} StartGas:{start.Value} Stop:{stop.UtcTime} StopGas:{stop.Value} value:{val}");
 
 
         if (double.IsInfinity(val) || double.IsNaN(val))
@@ -95,7 +98,7 @@ public class DGAAnalysis : IThreeCodeChecker
 
         var val = ((stop.Value - start.Value) / (start.Value * (stop.UtcTime - start.UtcTime).TotalDays));
 
-        Console.WriteLine($"CalcRGPR  {Device.FactoryName}  {Device.DeviceName} {name} Start:{start.UtcTime} StartGas:{start.Value} Stop:{stop.UtcTime} StopGas:{stop.Value} value:{val}");
+        //Console.WriteLine($"CalcRGPR  {Device.FactoryName}  {Device.DeviceName} {name} Start:{start.UtcTime} StartGas:{start.Value} Stop:{stop.UtcTime} StopGas:{stop.Value} value:{val}");
 
         if (double.IsInfinity(val) || double.IsNaN(val))
         {
@@ -138,14 +141,16 @@ public class DGAAnalysis : IThreeCodeChecker
     }
     public class ThreeCodeValidation
     {
+        public StringBuilder reason;
+
         public double h2 { get; set; }
         public double c2h2 { get; set; }
         public double tot { get; set; }
         public double absH2 { get; set; }
         public double absC2H2 { get; set; }
         public double absTotHyd { get; set; }
-        public double absCO { get; set; }
-        public double absCO2 { get; set; }
+        //public double absCO { get; set; }
+        //public double absCO2 { get; set; }
         public bool important { get; set; }
         public Dictionary<string, double[]> calcResult { get; set; }
 
@@ -160,84 +165,102 @@ public class DGAAnalysis : IThreeCodeChecker
             sb.Append(calcResult[nameof(absH2)][1] > -1 ? $"{nameof(absH2)},{absH2.ToString("0.0")},{calcResult[nameof(absH2)][1].ToString("0.0")} " : "");
             sb.Append(calcResult[nameof(absC2H2)][1] > -1 ? $"{nameof(absC2H2)},{absC2H2.ToString("0.0")},{calcResult[nameof(absC2H2)][1].ToString("0.0")} " : "");
             sb.Append(calcResult[nameof(absTotHyd)][1] > -1 ? $"{nameof(absTotHyd)},{absTotHyd.ToString("0.0")},{calcResult[nameof(absTotHyd)][1].ToString("0.0")} " : "");
-            sb.Append(calcResult[nameof(absCO)][1] > -1 ? $"{nameof(absCO)},{absCO.ToString("0.0")},{calcResult[nameof(absCO)][1].ToString("0.0")} " : "");
-            sb.Append(calcResult[nameof(absCO2)][1] > -1 ? $"{nameof(absCO2)},{absCO2.ToString("0.0")},{calcResult[nameof(absCO2)][1].ToString("0.0")} " : "");
+            //sb.Append(calcResult[nameof(absCO)][1] > -1 ? $"{nameof(absCO)},{absCO.ToString("0.0")},{calcResult[nameof(absCO)][1].ToString("0.0")} " : "");
+            //sb.Append(calcResult[nameof(absCO2)][1] > -1 ? $"{nameof(absCO2)},{absCO2.ToString("0.0")},{calcResult[nameof(absCO2)][1].ToString("0.0")} " : "");
             return sb.ToString();
             //}
             //else
             //{
             //}
         }
+        public static ThreeCodeValidation ThreeCodeIsImportant(IThreeCodeChecker checker)
+        {
+            var h2 = checker.ReadGasValue(typeof(GasName.H2).Name);
+            var c2h2 = checker.ReadGasValue(typeof(GasName.C2H2).Name);
+            var tot = checker.ReadTotHyd();
 
-    }
-    public static ThreeCodeValidation ThreeCodeIsImportant(IThreeCodeChecker checker)
-    {
-        var h2 = checker.ReadGasValue(typeof(GasName.H2).Name);
-        var c2h2 = checker.ReadGasValue(typeof(GasName.C2H2).Name);
-        var tot = checker.ReadTotHyd();
-
-        var absH2 = checker.ReadGasAbsValue(typeof(GasName.H2).Name);
-        var absC2H2 = checker.ReadGasAbsValue(typeof(GasName.C2H2).Name);
-        var absTotHyd = checker.ReadGasAbsValue(typeof(GasName.TotHyd).Name);
-        var absCO = checker.ReadGasAbsValue(typeof(GasName.CO).Name);
-        var absCO2 = checker.ReadGasAbsValue(typeof(GasName.CO2).Name);
-
-        var a1 = Math.Min(absH2 > 0 ? absH2 / checker.AlarmConfig.H2ar : -1, 1);
-        var a2 = Math.Min(absC2H2 > 0 ? absC2H2 / checker.AlarmConfig.C2H2ar : -1, 1);
-        var a3 = Math.Min(absTotHyd > 0 ? absTotHyd / checker.AlarmConfig.TotHydar : -1, 1);
-        var a4 = Math.Min(absCO > 0 ? absCO / checker.AlarmConfig.COar : -1, 1);
-        var a5 = Math.Min(absCO2 > 0 ? absCO2 / checker.AlarmConfig.CO2ar : -1, 1);
-
-        var b1 = Math.Min(h2 > 0 ? h2 / checker.AlarmConfig.H2 : -1, 1);
-        var b2 = Math.Min(c2h2 > 0 ? c2h2 / checker.AlarmConfig.C2H2 : -1, 1);
-        var b3 = Math.Min(tot > 0 ? tot / checker.AlarmConfig.TotHyd : -1, 1);
+            var absH2 = checker.ReadGasAbsValue(typeof(GasName.H2).Name);
+            var absC2H2 = checker.ReadGasAbsValue(typeof(GasName.C2H2).Name);
+            var absTotHyd = checker.ReadGasAbsValue(typeof(GasName.TotHyd).Name);
+            var absCO = checker.ReadGasAbsValue(typeof(GasName.CO).Name);
+            var absCO2 = checker.ReadGasAbsValue(typeof(GasName.CO2).Name);
 
 
-        //var thre = a1 * a2 * a3 * a4 * a5 * checker.AlarmConfig.AbsMulTh;
-        //var thre2 = checker.AlarmConfig.GasMulTh * b1 * b2 * b3;
-        //Console.WriteLine($"ThreeThreshold Gas:{thre} {thre > checker.AlarmConfig.MulTh} GasRatio:{thre2} {thre2 > checker.AlarmConfig.MulTh} ");
-        //return thre > checker.AlarmConfig.MulTh || thre2 > checker.AlarmConfig.MulTh;
+            //var a4 = Math.Min(absCO > 0 ? absCO / checker.AlarmConfig.COar : -1, 1);
+            //var a5 = Math.Min(absCO2 > 0 ? absCO2 / checker.AlarmConfig.CO2ar : -1, 1);
 
+            var a1 = (absH2 > 0 ? (absH2 / checker.AlarmConfig.H2ar) : 0);
+            var a2 = (absC2H2 > 0 ? (absC2H2 / checker.AlarmConfig.C2H2ar) : 0);
+            var a3 = (absTotHyd > 0 ? (absTotHyd / checker.AlarmConfig.TotHydar) : 0);
+            var b1 = (h2 > 0 ? (h2 / checker.AlarmConfig.H2) : 0);
+            var b2 = (c2h2 > 0 ? (c2h2 / checker.AlarmConfig.C2H2) : 0);
+            var b3 = (tot > 0 ? (tot / checker.AlarmConfig.TotHyd) : 0);
+
+
+            //var thre = a1 * a2 * a3 * a4 * a5 * checker.AlarmConfig.AbsMulTh;
+            //var thre2 = checker.AlarmConfig.GasMulTh * b1 * b2 * b3;
+            //Console.WriteLine($"ThreeThreshold Gas:{thre} {thre > checker.AlarmConfig.MulTh} GasRatio:{thre2} {thre2 > checker.AlarmConfig.MulTh} ");
+            //return thre > checker.AlarmConfig.MulTh || thre2 > checker.AlarmConfig.MulTh;
 
 
 
-        var ps1 = new double[] { a1, a2, a3, a4, a5 };
 
-        var ps2 = new double[] { b1, b2, b3 };
-        var gas = new Dictionary<string, double[]>
+            var gasabsvalue = new double[] {
+            a1,
+            a2,
+            a3,
+            //a4,
+            //a5
+        };
+
+            var gasvalue = new double[] { b1, b2, b3 };
+
+            var gas = new Dictionary<string, double[]>
         {
              {"absH2",new double[]{absH2 ,a1 } },
              {"absC2H2",new double[]{absC2H2 ,a2}},
              {"absTotHyd",new double[]{absTotHyd ,a3}},
-             {"absCO",new double[]{absCO ,a4}},
-             {"absCO2",new double[]{absCO2 ,a5}},
+             //{"absCO",new double[]{absCO ,a4}},
+             //{"absCO2",new double[]{absCO2 ,a5}},
              {"h2",new double[]{h2 ,b1}},
              {"c2h2",new double[]{c2h2 ,b2}},
              {"tot",new double[]{tot ,b3}},
         };
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in gas)
+            {
+                if (item.Value[1] > checker.AlarmConfig.MulTh)
+                {
+                    sb.Append($"{item.Key} ratio:{item.Value[1]} value:{item.Value[0]},");
+                }
+            }
 
 
-        var countAr = ps1.Where(s => s > -1 && s > checker.AlarmConfig.MulTh).Count();
+            var countAr = gasabsvalue.Where(s => s > -1 && s > checker.AlarmConfig.MulTh).Count();
 
-        var countGas = ps2.Where(s => s > -1 && s > checker.AlarmConfig.MulTh).Count();
-        Console.WriteLine($"absH2:{absH2}-{a1}，absC2H2:{absC2H2}-{a2}，absTotHyd:{absTotHyd}-{a3}，absCO:${a4}，absCO2:${a5}，H2:${b1}，c2h2:${b2}，tot:${b3}{countAr},{countGas}");
+            var countGas = gasvalue.Where(s => s > -1 && s > checker.AlarmConfig.MulTh).Count();
 
-        return new ThreeCodeValidation
-        {
-            calcResult = gas,
-            important = countAr > 0 || countGas > 0,
-            h2 = h2,
-            c2h2 = c2h2,
-            tot = tot,
-            absH2 = absH2,
-            absTotHyd = absTotHyd,
-            absCO = absCO,
-            absCO2 = absCO2,
-        };
-        //return countAr > 0 || countGas > 0;
+            Console.WriteLine($"{checker.DeviceName}  countar:{countAr},countgas:{countGas} reason:{sb.ToString()}");
+
+            return new ThreeCodeValidation
+            {
+                calcResult = gas,
+                important = countAr > 0 || countGas > 0,
+                h2 = h2,
+                c2h2 = c2h2,
+                tot = tot,
+                absH2 = absH2,
+                absTotHyd = absTotHyd,
+                reason = sb,
+                //absCO = absCO,
+                //absCO2 = absCO2,
+            };
+            //return countAr > 0 || countGas > 0;
 
 
+        }
     }
+
     public void OnNewState(DeviceState state)
     {
         var year = YearsGasData.FirstOrDefault(s => s.GasName == state.Name && s.Year == state.CreateTime.Year);
@@ -431,9 +454,10 @@ public class DGAAnalysis : IThreeCodeChecker
         var first = rules.FirstOrDefault(s => s.ErrorType == three.ErrorType);
         if (first == null)
             return DgaAlarmResult.Normal;
-        var vaildation = DGAAnalysis.ThreeCodeIsImportant(this);
+        var vaildation = ThreeCodeValidation.ThreeCodeIsImportant(this);
         if (vaildation.important == false)
         {
+            Console.WriteLine("AlarmThreeCode " + this._device.FactoryName + " " + this._device.FacilityName + " validation " + vaildation.ToString() + " ThreeTatio_Code " + three.ThreeTatio_Code + " ErrorCode " + three.ErrorCode + " ErrorReason " + three.ErrorReason + " " + vaildation.reason);
             return new DgaAlarmResult
             {
                 RuleId = first.RuleId,
